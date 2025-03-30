@@ -194,7 +194,7 @@ const handleApprove = async (data, actions) => {
                                 required
                                 maxLength={10}
                             />
-                            {phone  && 
+                            {!phone  && 
                                 <p className="text-red-500 text-sm mt-1">Enter a valid 10-digit Indian mobile number</p>
                             }
                         </div>
@@ -207,7 +207,7 @@ const handleApprove = async (data, actions) => {
                                 required
                                 maxLength={6}
                             />
-                            {zip  && 
+                            {!zip  && 
                                 <p className="text-red-500 text-sm mt-1">Enter a valid 6-digit PIN code</p>
                             }
                         </div>
