@@ -164,19 +164,22 @@ def create_order():
 @order_blueprint.route('/capture-payment', methods=['POST'])
 def capture_payment():
     data = request.json
-    order_id = data["order_id"]
+    order_id = data.get("order_id")  # Using get() to avoid KeyError
     paypal_order_id = data.get("paypal_order_id")
     
     try:
-        # If paypal_order_id was not provided, get it from our database
-       if not order_id:
-    # Find the order using the PayPal order ID
-        order = orders_collection.find_one({"paypal_order_id": paypal_order_id})
-        
-        if not order:
-            return jsonify({"error": "Order not found using PayPal order ID"}), 404
-        
-        order_id = str(order["_id"])
+        # If order_id was not provided, get it from our database using paypal_order_id
+        if not order_id and paypal_order_id:
+            # Find the order using the PayPal order ID
+            order = orders_collection.find_one({"paypal_order_id": paypal_order_id})
+            
+            if not order:
+                return jsonify({"error": "Order not found using PayPal order ID"}), 404
+            
+            order_id = str(order["_id"])
+        elif not order_id and not paypal_order_id:
+            return jsonify({"error": "Either order_id or paypal_order_id must be provided"}), 400
+            
         # Get PayPal access token
         access_token = get_paypal_access_token()
         
@@ -223,7 +226,9 @@ def capture_payment():
             
     except Exception as e:
         return jsonify({"error": "Payment capture failed", "details": str(e)}), 500
+    
 
+    
 # Other API routes remain the same...
 # Fetch User Orders API
 @order_blueprint.route('/get-orders/<user_id>', methods=['GET'])
