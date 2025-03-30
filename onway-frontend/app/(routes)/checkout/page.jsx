@@ -117,7 +117,7 @@ function Page() {
             
             setLoading(false);
             
-            if (response.data.order_id) {
+            if (response?.data?.display_order_id) {
                 toast('Order placed successfully! Your order ID is: ' + response.data.display_order_id);
                 setUpdateCart(!updateCart);
                 router.replace('/users#/my-orders');
