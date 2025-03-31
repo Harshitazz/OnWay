@@ -39,10 +39,10 @@ export default function Home() {
     try {
       const data = await fetchRandomProducts(page);
       if (data.length === 0) {
-        setHasMore(false); // No more products to fetch
+        setHasMore(false); 
       } else {
-        setProducts((prev) => [...prev, ...data]); // Append new products
-        setPage((prev) => prev + 1); // Increment page for next fetch
+        setProducts((prev) => [...prev, ...data]); 
+        setPage((prev) => prev + 1); 
       }
     } finally {
       setLoading(false);
@@ -109,30 +109,26 @@ const handleScroll = useCallback(() => {
     document.documentElement.offsetHeight - 100
   ) {
     if (selectedCategory) {
-      // Debug log
-      console.log(`Loading more category products. Current page: ${categoryPage}`);
-      getCategoryProducts(); // Fetch category-based products
+ 
+      getCategoryProducts();
     } else {
-      getProducts(); // Fetch random products
+      getProducts();
     }
   }
-}, [selectedCategory, categoryPage, loading, hasMore]); // Add all dependencies
+}, [selectedCategory]); // Add all dependencies
 
 // Fetch category-based products with pagination
 const getCategoryProducts = async () => {
   if (loading || !hasMore) return;
   
-  console.log(`Fetching category products for page ${categoryPage}`); // Debug log
-  
   setLoading(true);
   try {
     const data = await fetchProductsByCategory(selectedCategory, categoryPage);
-    console.log(`Got ${data.length} products for page ${categoryPage}`); // Debug log
     
     if (data.length === 0) {
       setHasMore(false);
     } else {
-      // Important: Check if we're getting the same products again
+      //  Check if we're getting the same products again
       const newProductIds = new Set(data.map(p => p.uniq_id));
       const existingProductIds = new Set(products.map(p => p.uniq_id));
       
