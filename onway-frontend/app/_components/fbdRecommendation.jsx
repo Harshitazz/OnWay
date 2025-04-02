@@ -11,13 +11,7 @@ const FrequentlyBoughtTogether = ({ recommendations, loading }) => {
   const { user } = useUser();
   const { setUpdateCart } = useContext(CartUpdateContext);
 
-  const handleAddToCart = async (item) => {
-    if (!user || !user.id) return;
-    const success = await addToCart(user.id, item);
-    if (success) {
-      setUpdateCart((prev) => !prev);
-    }
-  };
+
 
   return (
     <div className="p-2">
@@ -50,7 +44,7 @@ const FrequentlyBoughtTogether = ({ recommendations, loading }) => {
             ))}
           </div>
         ) : recommendations?.length > 0 ? (
-          <div className="grid grid-cols-2 gap-4 p-4 border-2">
+          <div className="grid md:grid-cols-2 gap-4 p-4 border-2">
             {recommendations.slice(0, 2).map((item, index) => (
               <div key={index} className="flex items-center bg-gray-100 rounded-lg p-2 shadow-md">
                 <div className="flex-1 text-center">

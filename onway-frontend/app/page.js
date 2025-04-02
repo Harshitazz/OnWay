@@ -87,7 +87,10 @@ export default function Home() {
   }, [updateCart, user]);
 
   const getCart = async () => {
-    if (!user) return;
+    if (!user || !user.id){
+      toast('Log in!');
+      return;
+  }
     const cartData = await fetchCart(user.id);
     if (cartData) {
       setCart(cartData);
@@ -96,6 +99,10 @@ export default function Home() {
 
 
   const fetchRecommendation = async () => {
+    if (!user || !user.id){
+      toast('Log in!');
+      return;
+  }
     setLoadingRecommendations(true);
     const data = await fetchCartAndRecommendations(user.id);
     setRecommendedProducts(data.recommendations);
@@ -110,24 +117,21 @@ const handleScroll = useCallback(() => {
   ) {
     if (selectedCategory) {
       // Debug log
-      console.log(`Loading more category products. Current page: ${categoryPage}`);
       getCategoryProducts(); // Fetch category-based products
     } else {
       getProducts(); // Fetch random products
     }
   }
-}, [selectedCategory, categoryPage, loading, hasMore]); // Add all dependencies
+}, [selectedCategory]); // Add all dependencies
 
 // Fetch category-based products with pagination
 const getCategoryProducts = async () => {
   if (loading || !hasMore) return;
   
-  console.log(`Fetching category products for page ${categoryPage}`); // Debug log
   
   setLoading(true);
   try {
     const data = await fetchProductsByCategory(selectedCategory, categoryPage);
-    console.log(`Got ${data.length} products for page ${categoryPage}`); // Debug log
     
     if (data.length === 0) {
       setHasMore(false);
@@ -140,7 +144,6 @@ const getCategoryProducts = async () => {
       const uniqueNewProducts = data.filter(p => !existingProductIds.has(p.uniq_id));
       
       if (uniqueNewProducts.length === 0) {
-        console.log("No new unique products received. Stopping pagination.");
         setHasMore(false);
       } else {
         setProducts((prev) => [...prev, ...uniqueNewProducts]);
@@ -167,14 +170,15 @@ const getCategoryProducts = async () => {
         setSelectedCategory={setSelectedCategory}
         selectedCategory={selectedCategory}
       />
-
-      <FrequentlyBoughtTogether
+{user && 
+  <FrequentlyBoughtTogether
         recommendations={recommendedProducts}
         loading={loadingRecommendations}
-      />
+      />}
+      
 
       <BuisnessList products={products} setProducts={setProducts} loading={loading} />
-      <CartIcon cart={cart} />
+      {user &&<CartIcon cart={cart} />}
     </div>
   );
 }
