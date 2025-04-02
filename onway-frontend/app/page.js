@@ -39,10 +39,10 @@ export default function Home() {
     try {
       const data = await fetchRandomProducts(page);
       if (data.length === 0) {
-        setHasMore(false); // No more products to fetch
+        setHasMore(false); 
       } else {
-        setProducts((prev) => [...prev, ...data]); // Append new products
-        setPage((prev) => prev + 1); // Increment page for next fetch
+        setProducts((prev) => [...prev, ...data]); 
+        setPage((prev) => prev + 1); 
       }
     } finally {
       setLoading(false);
@@ -116,10 +116,10 @@ const handleScroll = useCallback(() => {
     document.documentElement.offsetHeight - 100
   ) {
     if (selectedCategory) {
-      // Debug log
-      getCategoryProducts(); // Fetch category-based products
+ 
+      getCategoryProducts();
     } else {
-      getProducts(); // Fetch random products
+      getProducts();
     }
   }
 }, [selectedCategory]); // Add all dependencies
@@ -128,7 +128,6 @@ const handleScroll = useCallback(() => {
 const getCategoryProducts = async () => {
   if (loading || !hasMore) return;
   
-  
   setLoading(true);
   try {
     const data = await fetchProductsByCategory(selectedCategory, categoryPage);
@@ -136,7 +135,7 @@ const getCategoryProducts = async () => {
     if (data.length === 0) {
       setHasMore(false);
     } else {
-      // Important: Check if we're getting the same products again
+      //  Check if we're getting the same products again
       const newProductIds = new Set(data.map(p => p.uniq_id));
       const existingProductIds = new Set(products.map(p => p.uniq_id));
       
