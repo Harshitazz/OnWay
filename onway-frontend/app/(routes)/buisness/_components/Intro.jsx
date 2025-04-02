@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSquarePlus } from '@fortawesome/free-solid-svg-icons';
 
 import { addToCart } from '@/app/_utils/Api';
-import Skeleton from '@/app/_utils/Skeleton';
+import { toast } from 'sonner';
 
 function Intro({ product }) {
     const { user } = useUser();
@@ -17,7 +17,11 @@ function Intro({ product }) {
 
 
     const handleAddToCart = async (item) => {
-        if (!user || !user.id) return;
+        if (!user || !user.id){
+            toast('Log in!');
+            return;
+        }
+             
 
         const success = await addToCart(user.id, item);
         if (success) {

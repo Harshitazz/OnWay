@@ -1,8 +1,5 @@
 'use client'
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGreaterThan } from '@fortawesome/free-solid-svg-icons';
-import { CartUpdateContext } from '../_context/CartUpdateContext';
 
 function CategoryList({ setProducts, setSelectedCategory, selectedCategory }) {
   const listRef = useRef(null);
@@ -16,13 +13,6 @@ function CategoryList({ setProducts, setSelectedCategory, selectedCategory }) {
     { name: "Mens Clothes", image: "/mens.jpg" },
 
   ]);
-  const scrollRightHandler = () => {
-    if (listRef.current) {
-      listRef.current.scrollBy({ left: 200, behavior: 'smooth' });
-    }
-  };
-
-
 
   return (
     <div className='relative'>

@@ -40,7 +40,10 @@ function Page() {
       }, [updateCart, user]);
     
       const getCart = async () => {
-        if (!user) return;
+        if (!user || !user.id){
+          toast('Log in!');
+          return;
+      }
         setLoading(true)
         const cartData = await fetchCart(user.id);
 
@@ -66,7 +69,7 @@ function Page() {
             <Intro product={restro} cart={cart} />
             
             {/* Floating Cart Icon */}
-            <CartIcon cart={cart}/>
+            {user &&<CartIcon cart={cart}/>}
                 
 
             

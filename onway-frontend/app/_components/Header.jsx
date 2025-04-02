@@ -103,13 +103,13 @@ function Header() {
         <div className="flex justify-between items-center bg-reddish-50 px-1 sm:px-6 py-1 shadow-md">
             <div className='flex gap-4 '>
                 <div className=' p-1 text-black items-center flex gap-2'>
-                    <img className="w-12 " src="/logo.png" />
-                    <span className='text-3xl text-green-700 font-bold font-serif'>OnWay</span>
+                    <img className="sm:w-12 w-6" src="/logo.png" />
+                    <span className='sm:text-3xl text-xl text-green-700 font-bold font-serif'>OnWay</span>
                 </div>
 
             </div>
 
-            <div className="relative w-80" ref={searchRef}>
+            <div className="relative max-w-[150px] sm:max-w-none sm:w-80" ref={searchRef}>
                 <div className="flex items-center border p-2 rounded-lg bg-gray-200 w-full">
                     <input
                         type="text"

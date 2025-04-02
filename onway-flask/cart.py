@@ -42,7 +42,6 @@ def add_to_cart():
     user_id = data["user_id"]
     product = data["product"]
 
-    print(product)
 
     # Ensure quantity & price are integers
     product["quantity"] = int(product["quantity"])
@@ -108,9 +107,8 @@ def remove_from_cart():
 
 @cart_blueprint.route("/recommendations/<string:user_id>", methods=["GET"])
 def get_recommendations(user_id):
-    print(f"🔍 Fetching recommendations for user: {user_id}")  # Debugging
 
-    # 1️⃣ Get the user's cart
+    # 1️ Get the user's cart
     cart = carts_collection.find_one({"user_id": user_id})
     if not cart or not cart["items"]:
         return 
@@ -118,10 +116,10 @@ def get_recommendations(user_id):
     cart_items = cart["items"][-2:] 
     product_names = [item["category"].split(" ")[-1] for item in cart_items]
 
-    # 2️⃣ Get keywords for "frequently bought together" products using LLM
-    keywords = get_fbt_keywords(product_names)  # Function that gets keywords
+    # 2️ Get keywords for "frequently bought together" products using LLM
+    keywords = get_fbt_keywords(product_names)  
 
-    # 3️⃣ Fetch recommended products (One-to-One Mapping)
+    # 3️ Fetch recommended products (One-to-One Mapping)
     recommendations = []
     for i, keyword in enumerate(keywords):
         recommended_product = search_similar_products(keyword)  # Fetch similar product

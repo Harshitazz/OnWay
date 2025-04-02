@@ -41,10 +41,8 @@ function MyOrders() {
       // Fetch orders using user ID
       const response = await getOrders(userId);
       
-      console.log("Orders fetched:", response?.orders);
       setOrderList(response?.orders || []);
     } catch (error) {
-      console.error("Error fetching orders:", error);
     } finally {
       setLoading(false);
     }

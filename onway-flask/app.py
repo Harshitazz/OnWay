@@ -114,11 +114,6 @@ def suggest_categories():
     response = llm_pipeline.invoke(prompt)
 
     
-    print(response.content)
-    # Extract suggestions from LLM response
-    # suggestions = response["choices"][0]["message"]["content"].split(", ")
-
-    # return jsonify({"suggestions": suggestions[:10]})  # Limit to 10 suggestions
     return ({"suggestions": response.content})
 
 

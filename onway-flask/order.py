@@ -229,7 +229,7 @@ def capture_payment():
     
 
     
-# Other API routes remain the same...
+
 # Fetch User Orders API
 @order_blueprint.route('/get-orders/<user_id>', methods=['GET'])
 def get_orders(user_id):

@@ -39,7 +39,10 @@ function Page() {
     }, [user]);
 
     const getCart = async () => {
-        if (!user) return;
+        if (!user || !user.id){
+                    toast('Log in!');
+                    return;
+                }
         const cartData = await fetchCart(user.id);
         if (cartData) {
             setCart(cartData);
@@ -71,27 +74,22 @@ function Page() {
             });
             
             setLoading(false);
-            console.log("API Response:", response.data);
             
             if (response.data.paypal_order_id) {
                 localStorage.setItem("order_id", response.data.order_id); 
                                 // setPaypalOrderId(response.data.paypal_order_id);
                 
-                // For debugging only
-                console.log("MongoDB Order ID:", response.data.order_id);
-                console.log("PayPal Order ID:", response.data.paypal_order_id);
+          
                 
                 // For PayPal SDK
                 return response.data.paypal_order_id;
             } else {
                 toast("Payment creation failed");
-                console.error("Payment creation failed:", response.data.error);
                 return null;
             }
         } catch (error) {
             setLoading(false);
             toast("Error creating order");
-            console.error("Error creating order:", error);
             return null;
         }
     };
@@ -127,7 +125,6 @@ function Page() {
         } catch (error) {
             setLoading(false);
             toast("Error creating order");
-            console.error("Error creating order:", error);
         }
     };
 
@@ -164,7 +161,7 @@ const handleApprove = async (data, actions) => {
     return (
         <div>
             <h3 className='font-bold text-3xl my-5 text-center'>Checkout</h3>
-            <div className='p-5 px-5 md:px-10 grid grid-cols-1 md:grid-cols-3'>
+            <div className='p-5 px-5 md:px-10 grid grid-cols-1 md:grid-cols-3 gap-4'>
                 <div className='md:col-span-2 mx-8'>
                     <h3 className='text-3xl font-bold'>Billing Details</h3>
                     <div className='grid grid-cols-2 gap-10 mt-3'>
@@ -194,7 +191,7 @@ const handleApprove = async (data, actions) => {
                                 required
                                 maxLength={10}
                             />
-                            {phone  && 
+                            {!phone  && 
                                 <p className="text-red-500 text-sm mt-1">Enter a valid 10-digit Indian mobile number</p>
                             }
                         </div>
@@ -207,7 +204,7 @@ const handleApprove = async (data, actions) => {
                                 required
                                 maxLength={6}
                             />
-                            {zip  && 
+                            {!zip  && 
                                 <p className="text-red-500 text-sm mt-1">Enter a valid 6-digit PIN code</p>
                             }
                         </div>
@@ -279,7 +276,7 @@ const handleApprove = async (data, actions) => {
                 </div>
             </div>
 
-            <CartIcon cart={cart} />
+            {user &&<CartIcon cart={cart} />}
         </div>
     );
 }
