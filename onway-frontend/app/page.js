@@ -122,7 +122,7 @@ const handleScroll = useCallback(() => {
       getProducts();
     }
   }
-}, [selectedCategory]); // Add all dependencies
+}, [selectedCategory, loading, hasMore, categoryPage, products, getProducts, getCategoryProducts]);
 
 // Fetch category-based products with pagination
 const getCategoryProducts = async () => {
