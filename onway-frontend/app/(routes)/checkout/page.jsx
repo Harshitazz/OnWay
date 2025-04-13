@@ -3,7 +3,6 @@ import { CartUpdateContext } from '@/app/_context/CartUpdateContext';
 import { useUser } from '@clerk/nextjs';
 import { useSearchParams } from 'next/navigation';
 import React, { useContext, useEffect, useState } from 'react';
-import CartIcon from '../_components/CartIcon';
 import { toast } from 'sonner';
 import { PayPalButtons } from '@paypal/react-paypal-js';
 import { useRouter } from 'next/navigation';
@@ -40,7 +39,7 @@ function Page() {
 
     const getCart = async () => {
         if (!user || !user.id){
-                    toast('Log in!');
+                    toast('Sign up your Account!');
                     return;
                 }
         const cartData = await fetchCart(user.id);
@@ -276,7 +275,6 @@ const handleApprove = async (data, actions) => {
                 </div>
             </div>
 
-            {user &&<CartIcon cart={cart} />}
         </div>
     );
 }

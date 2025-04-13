@@ -13,14 +13,15 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { CartUpdateContext } from '../_context/CartUpdateContext'
-import { fetchProductsByCategory } from '../_utils/Api'
+import { fetchCart, fetchProductsByCategory } from '../_utils/Api'
 import { motion, AnimatePresence } from "framer-motion";
+import CartIcon from '../(routes)/_components/CartIcon'
 
 function Header() {
 
     const { signOut } = useClerk();
     const { user } = useUser()
-    const { selectedCategory, setSelectedCategory, products, setProducts, setLoading } = useContext(CartUpdateContext);
+    const { selectedCategory, setSelectedCategory, products, setProducts, setLoading,cart,setCart,updateCart } = useContext(CartUpdateContext);
     const [searchQuery, setSearchQuery] = useState("");
     const [suggestions, setSuggestions] = useState([]);
     const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -30,6 +31,23 @@ function Header() {
         await signOut();
 
     };
+
+      useEffect(() => {
+        if (user) {
+          getCart();
+        }
+      }, [updateCart, user]);
+    
+      const getCart = async () => {
+        if (!user || !user.id){
+          toast('Sign up your Account!');
+          return;
+      }
+        const cartData = await fetchCart(user.id);
+        if (cartData) {
+          setCart(cartData);
+        }
+      };
 
     useEffect(() => {
         const getCategoryProducts = async () => {
@@ -186,7 +204,7 @@ function Header() {
                 </SignedOut>
                 <SignedIn>
 
-
+                {user &&<CartIcon cart={cart} />}
 
                     <DropdownMenu className='bg-white z-100'>
                         <DropdownMenuTrigger><img src={user?.imageUrl} width={30} className='rounded-full' alt="user" />

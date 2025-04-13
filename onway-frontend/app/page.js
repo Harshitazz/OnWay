@@ -12,6 +12,7 @@ import {
   fetchRandomProducts,
 } from "./_utils/Api";
 import FrequentlyBoughtTogether from "./_components/fbdRecommendation";
+import CustomLoader from "./loading";
 
 export default function Home() {
   const { user } = useUser();
@@ -39,10 +40,10 @@ export default function Home() {
     try {
       const data = await fetchRandomProducts(page);
       if (data.length === 0) {
-        setHasMore(false); 
+        setHasMore(false);
       } else {
-        setProducts((prev) => [...prev, ...data]); 
-        setPage((prev) => prev + 1); 
+        setProducts((prev) => [...prev, ...data]);
+        setPage((prev) => prev + 1);
       }
     } finally {
       setLoading(false);
@@ -51,9 +52,7 @@ export default function Home() {
 
   useEffect(() => {
     getProducts();
-  }, [user]);
-
-
+  }, []);
 
   useEffect(() => {
     if (selectedCategory) {
@@ -61,7 +60,7 @@ export default function Home() {
       setProducts([]);
       setCategoryPage(1);
       setHasMore(true);
-      
+
       // Initial fetch for the selected category
       const fetchInitialCategoryProducts = async () => {
         setLoading(true);
@@ -74,93 +73,96 @@ export default function Home() {
           setLoading(false);
         }
       };
-      
+
       fetchInitialCategoryProducts();
     }
   }, [selectedCategory]);
 
   useEffect(() => {
     if (user) {
-      getCart();
+      // getCart();
       fetchRecommendation();
     }
   }, [updateCart, user]);
 
-  const getCart = async () => {
-    if (!user || !user.id){
-      toast('Log in!');
-      return;
-  }
-    const cartData = await fetchCart(user.id);
-    if (cartData) {
-      setCart(cartData);
-    }
-  };
-
-
   const fetchRecommendation = async () => {
-    if (!user || !user.id){
-      toast('Log in!');
+    if (!user || !user.id) {
+      toast("Sign up your Account!");
       return;
-  }
+    }
     setLoadingRecommendations(true);
     const data = await fetchCartAndRecommendations(user.id);
     setRecommendedProducts(data.recommendations);
     setLoadingRecommendations(false);
   };
 
-// Infinite Scroll Handler
-const handleScroll = useCallback(() => {
-  if (
-    window.innerHeight + document.documentElement.scrollTop >=
-    document.documentElement.offsetHeight - 100
-  ) {
-    if (selectedCategory) {
- 
-      getCategoryProducts();
-    } else {
-      getProducts();
-    }
-  }
-}, [selectedCategory, loading, hasMore, categoryPage, products, getProducts, getCategoryProducts]);
+  // Fetch category-based products with pagination
+  const getCategoryProducts = async () => {
+    if (loading || !hasMore) return;
 
-// Fetch category-based products with pagination
-const getCategoryProducts = async () => {
-  if (loading || !hasMore) return;
-  
-  setLoading(true);
-  try {
-    const data = await fetchProductsByCategory(selectedCategory, categoryPage);
-    
-    if (data.length === 0) {
-      setHasMore(false);
-    } else {
-      //  Check if we're getting the same products again
-      const newProductIds = new Set(data.map(p => p.uniq_id));
-      const existingProductIds = new Set(products.map(p => p.uniq_id));
-      
-      // Filter out any products we already have
-      const uniqueNewProducts = data.filter(p => !existingProductIds.has(p.uniq_id));
-      
-      if (uniqueNewProducts.length === 0) {
+    setLoading(true);
+    try {
+      const data = await fetchProductsByCategory(
+        selectedCategory,
+        categoryPage
+      );
+
+      if (data.length === 0) {
         setHasMore(false);
       } else {
-        setProducts((prev) => [...prev, ...uniqueNewProducts]);
-        setCategoryPage((prev) => prev + 1);
+        //  Check if we're getting the same products again
+        const newProductIds = new Set(data.map((p) => p.uniq_id));
+        const existingProductIds = new Set(products.map((p) => p.uniq_id));
+
+        // Filter out any products we already have
+        const uniqueNewProducts = data.filter(
+          (p) => !existingProductIds.has(p.uniq_id)
+        );
+
+        if (uniqueNewProducts.length === 0) {
+          setHasMore(false);
+        } else {
+          setProducts((prev) => [...prev, ...uniqueNewProducts]);
+          setCategoryPage((prev) => prev + 1);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching category products:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Infinite Scroll Handler
+  const handleScroll = useCallback(() => {
+    if (
+      window.innerHeight + document.documentElement.scrollTop >=
+      document.documentElement.offsetHeight - 100
+    ) {
+      if (selectedCategory) {
+        getCategoryProducts();
+      } else {
+        getProducts();
       }
     }
-  } catch (error) {
-    console.error("Error fetching category products:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+  }, [
+    selectedCategory,
+    loading,
+    hasMore,
+    categoryPage,
+    products,
+    getProducts,
+    getCategoryProducts,
+  ]);
+
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
 
-  
+  if(!user||loading ||loadingRecommendations ){
+    return <CustomLoader/>
+  }
 
   return (
     <div className="w-[80%] m-auto">
@@ -169,15 +171,19 @@ const getCategoryProducts = async () => {
         setSelectedCategory={setSelectedCategory}
         selectedCategory={selectedCategory}
       />
-{user && 
-  <FrequentlyBoughtTogether
-        recommendations={recommendedProducts}
-        loading={loadingRecommendations}
-      />}
-      
+      {user && (
+        <FrequentlyBoughtTogether
+          recommendations={recommendedProducts}
+          loading={loadingRecommendations}
+        />
+      )}
 
-      <BuisnessList products={products} setProducts={setProducts} loading={loading} />
-      {user &&<CartIcon cart={cart} />}
+      <BuisnessList
+        products={products}
+        setProducts={setProducts}
+        loading={loading}
+      />
+      {/* {user &&<CartIcon cart={cart} />} */}
     </div>
   );
 }

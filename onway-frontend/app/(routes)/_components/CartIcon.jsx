@@ -12,13 +12,13 @@ function CartIcon({cart}) {
   return (
     <div>
       <Popover>
-                <div className='fixed bottom-5 left-5 p-3 rounded-full shadow-lg flex items-center justify-center border-4 cursor-pointer'>
+                <div className=' p-3  flex items-center justify-center cursor-pointer'>
 
                     <PopoverTrigger >
                         <FontAwesomeIcon icon={faCartShopping} />
                         <span className='ml-2'>{cart?.items?.length}</span>
                     </PopoverTrigger>
-                    <PopoverContent className='bg-slate-200 w-100'>
+                    <PopoverContent className='bg-gray-100 w-100 mr-2'>
                         <Cart cart={cart}/>
                     </PopoverContent>
                     </div>
