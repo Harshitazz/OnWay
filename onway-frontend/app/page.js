@@ -160,7 +160,7 @@ export default function Home() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
 
-  if(!user||loading ||loadingRecommendations ){
+  if(!user||loading  ){
     return <CustomLoader/>
   }
 

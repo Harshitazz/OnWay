@@ -1,60 +1,51 @@
 'use client'
 import { useState, useEffect } from 'react';
 
-export default function CustomLoader() {
-  const [progress, setProgress] = useState(0);
+export default function CustomLoading() {
+  const [rotation, setRotation] = useState(0);
   
   useEffect(() => {
-    const timer = setInterval(() => {
-      setProgress((prevProgress) => {
-        const newProgress = prevProgress + 1;
-        return newProgress >= 100 ? 0 : newProgress;
-      });
-    }, 50);
+    const interval = setInterval(() => {
+      setRotation(prev => (prev + 2) % 360);
+    }, 10);
     
-    return () => {
-      clearInterval(timer);
-    };
+    return () => clearInterval(interval);
   }, []);
-
+  
+  // Number of dots around the cart
+  const dotsCount = 12;
+  
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
-        <div className="flex items-center justify-center mb-4">
-          <div className="relative">
-            {/* Shopping cart icon */}
-            <img className="h-16 w-16" src="/logo.png" />
+    <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-90 z-50">
+      <div className="relative h-32 w-32">
+        {/* Cart Icon in the center */}
+        <div className="absolute inset-0 flex items-center justify-center">
+        <img className="sm:w-16 w-16" src="/logo.png" />
+        </div>
+        
+        {/* Rotating Dots */}
+        {Array.from({ length: dotsCount }).map((_, index) => {
+          const angle = (index * (360 / dotsCount) + rotation) % 360;
+          const radian = (angle * Math.PI) / 180;
+          const x = 50 + 35 * Math.cos(radian);
+          const y = 50 + 35 * Math.sin(radian);
           
-          </div>
-        </div>
-        
-        <h2 className="text-xl font-semibold text-center text-gray-800 mb-2">Loading your products</h2>
-        <p className="text-gray-600 text-center mb-4">Please wait while we prepare your shopping experience</p>
-        
-        {/* Progress bar */}
-        <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-          <div 
-            className="bg-green-700 h-2.5 rounded-full transition-all duration-300 ease-out"
-            style={{ width: `${progress}%` }}
-          ></div>
-        </div>
-        
-        {/* Loading messages that change */}
-        <div className="h-6">
-          {progress < 30 && (
-            <p className="text-sm text-gray-500 text-center animate-pulse">Fetching the latest products...</p>
-          )}
-          {progress >= 30 && progress < 60 && (
-            <p className="text-sm text-gray-500 text-center animate-pulse">Checking for special offers...</p>
-          )}
-          {progress >= 60 && progress < 90 && (
-            <p className="text-sm text-gray-500 text-center animate-pulse">Personalizing your experience...</p>
-          )}
-          {progress >= 90 && (
-            <p className="text-sm text-gray-500 text-center animate-pulse">Almost ready!</p>
-          )}
-        </div>
+          return (
+            <div 
+              key={index}
+              className="absolute h-3 w-3 rounded-full bg-green-700"
+              style={{
+                left: `${x}%`,
+                top: `${y}%`,
+                transform: 'translate(-50%, -50%)',
+                opacity: 0.2 + (0.8 * (index % dotsCount)) / dotsCount
+              }}
+            />
+          );
+        })}
       </div>
+      
+      
     </div>
   );
 }
