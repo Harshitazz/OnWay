@@ -32,7 +32,13 @@ function Intro({ Id, closeModal }) {
 
     const handleAddToCart = async (item) => {
         if (!user || !user.id) {
-            toast('Sign up your Account!');
+            toast('Sign up your Account!',{
+                style: {
+                    backgroundColor: "#ffffff",
+                    color: "#000000", 
+                    border: "1px solid #e5e7eb", 
+                  },
+            });
             return;
         }
 
@@ -40,6 +46,13 @@ function Intro({ Id, closeModal }) {
         const success = await addToCart(user.id, item);
         if (success) {
             setUpdateCart((prev) => !prev); // Trigger re-fetch
+            toast("Added item Successfully", {
+                style: {
+                  backgroundColor: "#ffffff",
+                  color: "#000000", 
+                  border: "1px solid #e5e7eb", 
+                },
+              });
         }
     };
     const settings = {
@@ -63,7 +76,7 @@ function Intro({ Id, closeModal }) {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-lg max-w-6xl w-full max-h-[100vh] min-h-[70vh] overflow-y-auto">
+            <div className="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] min-h-[70vh] overflow-y-auto">
                 <div className="flex justify-between bg-gray-200 items-center px-4 pt-2">
                 <h2 className="text-xl font-bold">{product.product_name}</h2>
                     <button
