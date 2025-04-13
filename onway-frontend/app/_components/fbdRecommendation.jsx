@@ -1,17 +1,19 @@
-import { useUser } from "@clerk/nextjs";
-import React, { useContext } from "react";
-import { CartUpdateContext } from "../_context/CartUpdateContext";
-import { addToCart } from "../_utils/Api";
-import Link from "next/link";
+import React, { useContext, useState } from "react";
+import Intro from "./Intro";
 
 const truncateText = (text, maxLength = 30) =>
   text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
 
 const FrequentlyBoughtTogether = ({ recommendations, loading }) => {
-  const { user } = useUser();
-  const { setUpdateCart } = useContext(CartUpdateContext);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [clickedId, setClickedId] = useState(null);
 
+  const openModal = (uniqId) => {
+    setClickedId(uniqId);
+    setIsModalOpen(true);
+  };
 
+  const closeModal = () => setIsModalOpen(false);
 
   return (
     <div className="p-2">
@@ -31,7 +33,15 @@ const FrequentlyBoughtTogether = ({ recommendations, loading }) => {
               d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
             />
           </svg>
-          Frequently Bought Together Items Based on Your Cart
+          {recommendations?.length > 0 ? (
+            <div>
+              Frequently Bought Together Items Based on Your Cart
+            </div>
+          ) : (
+            <div>
+              Add items in your cart to get Ai powered Recommendations!
+            </div>
+          )}
         </h1>
 
         {loading ? (
@@ -44,7 +54,7 @@ const FrequentlyBoughtTogether = ({ recommendations, loading }) => {
             ))}
           </div>
         ) : recommendations?.length > 0 ? (
-          <div className="grid md:grid-cols-2 gap-4 p-4 border-2">
+          <div className="grid md:grid-cols-2 gap-4 p-4">
             {recommendations.slice(0, 2).map((item, index) => (
               <div key={index} className="flex items-center bg-gray-100 rounded-lg p-2 shadow-md">
                 <div className="flex-1 text-center">
@@ -61,7 +71,10 @@ const FrequentlyBoughtTogether = ({ recommendations, loading }) => {
 
                 <div className="text-xl font-bold text-gray-500 mx-2">+</div>
 
-                <Link className="flex-1 text-center" href={'/buisness/' + item.recommended_product?.uniq_id}>
+                <div 
+                  className="flex-1 text-center cursor-pointer" 
+                  onClick={() => openModal(item.recommended_product.uniq_id)}
+                >
                   <div className="h-[200px] mb-2 w-full overflow-hidden rounded-lg bg-white">
                     <img
                       className="h-full w-full object-contain"
@@ -71,12 +84,16 @@ const FrequentlyBoughtTogether = ({ recommendations, loading }) => {
                   </div>
                   <p className="text-xs font-medium">{truncateText(item.recommended_product.product_name)}</p>
                   <p className="text-xs text-gray-600 font-semibold mb-1">₹{item.recommended_product.discounted_price}</p>
-                </Link>
+                </div>
               </div>
             ))}
           </div>
         ) : null}
       </div>
+
+      {isModalOpen && (
+        <Intro closeModal={closeModal} Id={clickedId} />
+      )}
     </div>
   );
 };
