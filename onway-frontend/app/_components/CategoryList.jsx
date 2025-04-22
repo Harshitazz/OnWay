@@ -39,8 +39,6 @@ function CategoryList({ setProducts, setSelectedCategory, selectedCategory }) {
       </button>
     ))}
       </div>
-      {/* <FontAwesomeIcon onClick={scrollRightHandler} icon={faGreaterThan} width={20}
-        className='absolute right-0 bg-gray-100 p-2 rounded-full top-[50%] cursor-pointer' /> */}
     </div>
   );
 }

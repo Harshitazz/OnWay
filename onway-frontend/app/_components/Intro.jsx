@@ -45,7 +45,7 @@ function Intro({ Id, closeModal }) {
 
         const success = await addToCart(user.id, item);
         if (success) {
-            setUpdateCart((prev) => !prev); // Trigger re-fetch
+            setUpdateCart((prev) => !prev); 
             toast("Added item Successfully", {
                 style: {
                   backgroundColor: "#ffffff",

@@ -51,10 +51,8 @@ function Header() {
 
     useEffect(() => {
         const getCategoryProducts = async () => {
-            //   setLoading(true);
             const data = await fetchProductsByCategory(selectedCategory);
             setProducts(data);
-            //   setLoading(false);
         };
 
         getCategoryProducts();
@@ -71,7 +69,6 @@ function Header() {
         return () => clearTimeout(timer);
     }, [searchQuery]);
 
-    // Fetch suggestions when debouncedQuery changes
     useEffect(() => {
         const fetchSuggestions = async () => {
             if (!debouncedQuery.trim()|| searchQuery === selectedCategory) {
@@ -90,7 +87,6 @@ function Header() {
                 }
                 setSuggestions(parsedSuggestions);
 
-                // console.log(data.suggestions)
             } catch (error) {
                 console.error("Error fetching suggestions:", error);
             }
@@ -100,13 +96,12 @@ function Header() {
     }, [debouncedQuery]);
 
 
-    const searchRef = useRef(null); // Reference to the search box
+    const searchRef = useRef(null);
 
-    // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (searchRef.current && !searchRef.current.contains(event.target )) {
-                setSuggestions([]); // Close dropdown
+                setSuggestions([]); 
             }
         };
 
@@ -166,7 +161,7 @@ function Header() {
                                     onClick={() => {
                                         setSearchQuery(suggestion);
                                         setSelectedCategory(suggestion);
-                                        setSuggestions([]); // Hide suggestions
+                                        setSuggestions([]); 
                                     }}
                                     whileHover={{ scale: 1.02 }}
                                 >
@@ -185,13 +180,7 @@ function Header() {
 
 
                 <SignedOut className='gap-2 flex'>
-                    {/* <li className=' rounded-lg  hover:scale-110 flex border-2 py-2 px-2'>
-
-                        <SignInButton mode='modal'>
-                            
-                            <button>Login</button>
-                        </SignInButton>
-                    </li> */}
+                    
                     <li className=' rounded-lg  hover:scale-105 flex bg-gray-200 py-2 px-2'>
 
 

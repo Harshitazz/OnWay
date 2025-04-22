@@ -30,7 +30,6 @@ function Page() {
     }, [user, updateCart]);
 
     useEffect(() => {
-        // Prefill with user data if available
         if (user) {
             setEmail(user.emailAddresses[0]?.emailAddress || '');
             setName(user.fullName || '');
@@ -53,7 +52,6 @@ function Page() {
 
 
 
-    // Function to create order in Flask backend
     const createOrder = async () => {
         try {
             // if (!(name && email && address && zip && phone)) {
@@ -76,11 +74,9 @@ function Page() {
             
             if (response.data.paypal_order_id) {
                 localStorage.setItem("order_id", response.data.order_id); 
-                                // setPaypalOrderId(response.data.paypal_order_id);
                 
           
                 
-                // For PayPal SDK
                 return response.data.paypal_order_id;
             } else {
                 toast("Payment creation failed");
@@ -95,7 +91,6 @@ function Page() {
 
     
 
-    // Function to handle cash on delivery
     const handleCashOnDelivery = async () => {
         try {
          
@@ -127,12 +122,10 @@ function Page() {
         }
     };
 
-   // Updated handleApprove function
 const handleApprove = async (data, actions) => {
     try {
         setLoading(true);
         
-        // Call the capture-payment endpoint
         const response = await axios.post('http://localhost:5000/capture-payment', {
             order_id: localStorage.getItem("order_id"),
             paypal_order_id: data.orderID  // This is the PayPal order ID

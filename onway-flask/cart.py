@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from db import db
 from utils import get_fbt_keywords, search_similar_products
 
-# Convert MongoDB document to JSON-friendly format
+# JSON-friendly format
 def serialize_cart(cart):
     return {
         "_id": str(cart["_id"]),
@@ -27,7 +27,6 @@ cart_blueprint = Blueprint("cart", __name__)
 
 carts_collection = db["carts"]
 
-# Get user cart
 @cart_blueprint.route('/<user_id>', methods=['GET'])
 def get_cart(user_id):
     cart = carts_collection.find_one({"user_id": user_id})
@@ -35,7 +34,6 @@ def get_cart(user_id):
         return jsonify(serialize_cart(cart))
     return jsonify({"message": "Cart is empty", "items": [], "total_price": 0}), 200
 
-# Add item to cart
 @cart_blueprint.route('/add', methods=['POST'])
 def add_to_cart():
     data = request.json
@@ -43,7 +41,6 @@ def add_to_cart():
     product = data["product"]
 
 
-    # Ensure quantity & price are integers
     product["quantity"] = int(product["quantity"])
     product["discounted_price"] = int(product["discounted_price"])
 
@@ -59,7 +56,7 @@ def add_to_cart():
                 break
 
         if not found:
-            items.append(product)  # Add new product
+            items.append(product)
 
         total_price = sum(item["quantity"] * item["discounted_price"] for item in items)
 
@@ -75,7 +72,6 @@ def add_to_cart():
     updated_cart = carts_collection.find_one({"user_id": user_id})
     return jsonify(serialize_cart(updated_cart))
 
-# Remove item from cart
 @cart_blueprint.route('/remove', methods=['POST'])
 def remove_from_cart():
     data = request.json
@@ -90,9 +86,8 @@ def remove_from_cart():
     for item in cart["items"]:
         if item["uniq_id"] == product_id:
             if item["quantity"] > 1:
-                item["quantity"] -= 1  # Reduce quantity
+                item["quantity"] -= 1 
                 updated_items.append(item)
-            # If quantity = 1, don't add it to updated_items (removes it)
         else:
             updated_items.append(item)
 
@@ -108,7 +103,6 @@ def remove_from_cart():
 @cart_blueprint.route("/recommendations/<string:user_id>", methods=["GET"])
 def get_recommendations(user_id):
 
-    # 1️ Get the user's cart
     cart = carts_collection.find_one({"user_id": user_id})
     if not cart or not cart["items"]:
         return 
@@ -116,22 +110,20 @@ def get_recommendations(user_id):
     cart_items = cart["items"][-2:] 
     product_names = [item["category"].split(" ")[-1] for item in cart_items]
 
-    # 2️ Get keywords for "frequently bought together" products using LLM
     keywords = get_fbt_keywords(product_names)  
 
-    # 3️ Fetch recommended products (One-to-One Mapping)
     recommendations = []
     for i, keyword in enumerate(keywords):
-        recommended_product = search_similar_products(keyword)  # Fetch similar product
+        recommended_product = search_similar_products(keyword)  
         if recommended_product:
             recommendations.append({
-                "cart_product": cart_items[i],  # Original product
-                "recommended_product": recommended_product[0]  # Only take the first one
+                "cart_product": cart_items[i],  
+                "recommended_product": recommended_product[0] 
             })
         else:
             recommendations.append({
                 "cart_product": cart_items[i],
-                "recommended_product": None  # No recommendation found
+                "recommended_product": None  
             })
 
     return jsonify({"recommendations": recommendations})

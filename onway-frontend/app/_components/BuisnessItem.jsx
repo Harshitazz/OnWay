@@ -34,7 +34,6 @@ function BusinessItem({ buisness }) {
         </div>
       </div>
 
-      {/* Modal */}
       {isModalOpen && (
         <Intro closeModal={closeModal} Id={buisness?.uniq_id}/>
       )}

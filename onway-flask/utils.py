@@ -5,12 +5,13 @@ import joblib
 import ast 
 from langchain_groq import ChatGroq
 
-# Initialize the ChatGroq model
 llm_pipeline = ChatGroq(
     model="llama-3.3-70b-versatile",
     groq_api_key="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",
     temperature=0,
 )
+
+
 
 df = joblib.load("./models/product_df.pkl")
 
@@ -83,7 +84,7 @@ def format_description(description):
         response_json = json.loads(text_response)
 
        
-        print("Raw LLM Response:", response_json)  # Debugging
+        print("Raw LLM Response:", response_json) 
 
         return response_json["script"]
        
@@ -105,7 +106,6 @@ def get_fbt_keywords(product_names):
         
         response = llm_pipeline.invoke(prompt)
 
-        # Ensure we extract only the relevant keyword
         keywords.append(response.content.strip())  
 
-    return keywords  # List of single keywords per product
+    return keywords 

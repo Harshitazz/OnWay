@@ -26,17 +26,15 @@ export default function Home() {
     updateCart,
   } = useContext(CartUpdateContext);
 
-  const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(1); // Pagination for random products
-  const [categoryPage, setCategoryPage] = useState(1); // Pagination for category-based products
-  const [hasMore, setHasMore] = useState(true); // Track if more products are available
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1); 
+  const [categoryPage, setCategoryPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true); 
   const [recommendedProducts, setRecommendedProducts] = useState([]);
   const [loadingRecommendations, setLoadingRecommendations] = useState(false);
 
-  // Fetch random products with pagination
   const getProducts = async () => {
     if (loading || !hasMore) return;
-    setLoading(true);
     try {
       const data = await fetchRandomProducts(page);
       if (data.length === 0) {
@@ -46,12 +44,17 @@ export default function Home() {
         setPage((prev) => prev + 1);
       }
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
   useEffect(() => {
-    getProducts();
+    const fetchInitial = async () => {
+      setLoading(true);
+      await getProducts();
+      setLoading(false);   
+    };
+    fetchInitial();
   }, []);
 
   useEffect(() => {
@@ -96,11 +99,10 @@ export default function Home() {
     setLoadingRecommendations(false);
   };
 
-  // Fetch category-based products with pagination
   const getCategoryProducts = async () => {
     if (loading || !hasMore) return;
 
-    setLoading(true);
+    // setLoading(true);
     try {
       const data = await fetchProductsByCategory(
         selectedCategory,
@@ -128,9 +130,7 @@ export default function Home() {
       }
     } catch (error) {
       console.error("Error fetching category products:", error);
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
 
   // Infinite Scroll Handler
@@ -160,7 +160,7 @@ export default function Home() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
 
-  if(!user||loading  ){
+  if(loading  ){
     return <CustomLoader/>
   }
 

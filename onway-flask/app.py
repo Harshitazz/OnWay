@@ -17,7 +17,7 @@ CORS(app,resources={r"/*": {"origins": "*"}})
 
 
 
-# Load dataset
+# dataset
 DATA_PATH = "./database/products.csv"
 if not os.path.exists(DATA_PATH):
     print("Error: Run train.py first to download and process the dataset!")
@@ -26,7 +26,7 @@ if not os.path.exists(DATA_PATH):
 app.register_blueprint(cart_blueprint, url_prefix="/cart")
 app.register_blueprint(order_blueprint, url_prefix="/")
 
-# Load models
+# models
 
 df = joblib.load("./models/product_df.pkl")
 groq_api_key = os.getenv("GROQ_API_KEY")
@@ -62,7 +62,7 @@ def get_product(uniq_id):
         return jsonify({"error": "Product not found"}), 400
 
     
-    product = product[0]  # Convert list to dictionary
+    product = product[0] 
 
     # Format description using LLM
     formatted_description = format_description(product["description"])
@@ -101,9 +101,8 @@ def suggest_categories():
     query = request.args.get("query", "").strip()
 
     if not query:
-        return jsonify({"suggestions": []})  # Return empty if no input
+        return jsonify({"suggestions": []}) 
 
-    # Prompt LLM to complete partial words
     prompt = f"""
         Given the incomplete input '{query}', suggest the most 5 relevant products item names that might match this prefix. Provide a comma-separated list.
 

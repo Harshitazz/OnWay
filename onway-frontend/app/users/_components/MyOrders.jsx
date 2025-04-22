@@ -10,7 +10,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 
-// Update this API function to match your backend
 const getOrders = async (userIdentifier) => {
   try {
     const response = await axios.get(`http://localhost:5000/get-orders/${userIdentifier}`);
@@ -35,10 +34,8 @@ function MyOrders() {
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      // Try to use user ID first (most reliable)
       const userId = user?.id;
       
-      // Fetch orders using user ID
       const response = await getOrders(userId);
       
       setOrderList(response?.orders || []);
