@@ -34,7 +34,7 @@ export default function Home() {
   const [loadingRecommendations, setLoadingRecommendations] = useState(false);
 
   const getProducts = async () => {
-    if (loading || !hasMore) return;
+    if (!hasMore|| isLoadingMore) return;
     try {
       const data = await fetchRandomProducts(page);
       if (data.length === 0) {
@@ -100,7 +100,7 @@ export default function Home() {
   };
 
   const getCategoryProducts = async () => {
-    if (loading || !hasMore) return;
+    if ( !hasMore || isLoadingMore) return;
 
     // setLoading(true);
     try {
@@ -133,9 +133,24 @@ export default function Home() {
     } 
   };
 
-  // Infinite Scroll Handler
-  const handleScroll = useCallback(() => {
+// Debounce function
+const debounce = (func, wait) => {
+  let timeout;
+  return function(...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+};
+
+const [isLoadingMore, setIsLoadingMore] = useState(false); // New state to track ongoing requests
+
+// Debounced scroll handler
+const handleScroll = useCallback(
+  debounce(() => {
     if (
+      !loading && 
+      !isLoadingMore && 
+      hasMore &&
       window.innerHeight + document.documentElement.scrollTop >=
       document.documentElement.offsetHeight - 100
     ) {
@@ -145,20 +160,14 @@ export default function Home() {
         getProducts();
       }
     }
-  }, [
-    selectedCategory,
-    loading,
-    hasMore,
-    categoryPage,
-    products,
-    getProducts,
-    getCategoryProducts,
-  ]);
+  }, 250), // 250ms debounce
+  [selectedCategory, loading, hasMore, isLoadingMore, categoryPage, products]
+);
 
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [handleScroll]);
+useEffect(() => {
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, [handleScroll]);
 
   if(loading  ){
     return <CustomLoader/>
@@ -183,7 +192,6 @@ export default function Home() {
         setProducts={setProducts}
         loading={loading}
       />
-      {/* {user &&<CartIcon cart={cart} />} */}
     </div>
   );
 }
