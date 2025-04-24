@@ -108,9 +108,10 @@ def get_recommendations(user_id):
         return 
 
     cart_items = cart["items"][-2:] 
-    product_names = [item["category"].split(" ")[-1] for item in cart_items]
+    product_categories = [item["category"] for item in cart_items]
 
-    keywords = get_fbt_keywords(product_names)  
+    # Use the product category directly for better context in recommendations
+    keywords = get_fbt_keywords(product_categories)  
 
     recommendations = []
     for i, keyword in enumerate(keywords):

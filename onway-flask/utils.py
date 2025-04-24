@@ -4,6 +4,8 @@ import json
 import joblib
 import ast 
 from langchain_groq import ChatGroq
+import chromadb
+from chromadb.config import Settings
 
 llm_pipeline = ChatGroq(
     model="llama-3.3-70b-versatile",
@@ -11,52 +13,62 @@ llm_pipeline = ChatGroq(
     temperature=0,
 )
 
-
-
-df = joblib.load("./models/product_df.pkl")
-
 sbert_model = SentenceTransformer("all-MiniLM-L6-v2")
-faiss_index = faiss.read_index("./models/faiss_index.bin")
-# Search function
-def search_similar_products(query, page=1, limit=9):
-    query_embedding = sbert_model.encode([query], convert_to_numpy=True)
-    
-    # Get a much larger pool of results - enough to cover multiple pages
-    # For example, get 100 or more results to ensure we have enough unique products
-    max_results = 100  # Adjust this based on your dataset size
-    _, indices = faiss_index.search(query_embedding, max_results)
 
-    results = []
-    start_idx = (page - 1) * limit
-    end_idx = page * limit
+from chromadb import PersistentClient
+
+client = PersistentClient(path="./chroma_store")  # path where data will be saved
+collection = client.get_or_create_collection("products")
+
+
+# 🔍 Updated search using Chroma
+def search_similar_products(query, page=1, limit=9):
+  
+    query_embedding = sbert_model.encode([query]).tolist()
     
-    # Make sure we don't exceed the number of results we have
-    if start_idx >= len(indices[0]):
+    # Query Chroma
+    max_results = 100  # Get more results for pagination
+    results = collection.query(query_embeddings=query_embedding, n_results=max_results)
+
+    hits = []
+    start = (page - 1) * limit
+    end = start + limit
+    
+    if not results["documents"][0]:
+        print("No results found for query:", query)
         return []
-    
-    # Slice the indices array to get the correct page of results
-    for idx in indices[0][start_idx:end_idx]:
-        row = df.iloc[idx]
+
+    for idx, (doc, meta, pid) in enumerate(zip(results["documents"][0], results["metadatas"][0], results["ids"][0])):
+        if idx < start or idx >= end:
+            continue
+
         images = []
-        
-        # Convert the string representation of a list into a real list
-        if isinstance(row["image"], str) and row["image"].startswith("["):
+        if "image" in meta and meta["image"]:
             try:
-                images = ast.literal_eval(row["image"])  # Safely convert string to list
-            except:
+                if isinstance(meta["image"], str) and (meta["image"].startswith("[") or meta["image"].startswith("\"")):
+                    # It's likely a JSON string
+                    images = json.loads(meta["image"]) if meta["image"].startswith("[") else [meta["image"]]
+                elif isinstance(meta["image"], list):
+                    images = meta["image"]
+                else:
+                    images = [str(meta["image"])]
+            except Exception as e:
+                print(f"Error parsing image data: {e}")
                 images = []
 
-        results.append({
-            "uniq_id": row["uniq_id"],
-            "product_name": row["product_name"],
-            "product_url": row["product_url"],
-            "retail_price": row["retail_price"],
-            "discounted_price": row["discounted_price"],
-            "category": row["clean_category"],
-            "image": images  # Ensure images is a proper list
-        })
+        # Create product with safe access to fields
+        product = {
+            "uniq_id": pid,
+            "product_name": meta.get("product_name", "Unknown"),
+            "retail_price": meta.get("retail_price", 0),
+            "discounted_price": meta.get("discounted_price", 0),
+            "category": meta.get("clean_category", "Unknown"),
+            "image": images
+        }
+        
+        hits.append(product)
 
-    return results
+    return hits
 
 def format_description(description):
     prompt = f"""
@@ -83,9 +95,7 @@ def format_description(description):
 
         response_json = json.loads(text_response)
 
-       
-        print("Raw LLM Response:", response_json) 
-
+    
         return response_json["script"]
        
 
@@ -98,11 +108,27 @@ def get_fbt_keywords(product_names):
     keywords = []
 
     for product in product_names:
-        prompt = f"""suggest single most relevant but different products that customers frequently buy together for '{product}'. 
-    Ensure the recommendations are from different brands, styles, or categories but still complement the original product.
-    for example : product_name= Lexel High Quality Braided Metal Head Pure Copper Fast Charging 1.5 Meter Long for All Smartphone like Samsung HTC etc USB Cable (it is a usb cable)
-    reccomendation should be related to electronics like laptops
-        """
+        prompt = f"""
+            You are an e-commerce recommendation engine.
+
+            Suggest **1 single product** that customers often buy together with the following product: '{product}'.
+
+            Rules:
+            - It must be from a **different category**, but **practically useful** or **frequently bought together**.
+            - Focus on **complementary use cases** (e.g., Gloves → Hand Warmers, not Smartwatches).
+            - No brand recommendations unless necessary.
+            - Response format: just the recommended product name, no explanation.
+
+            Example:
+            Input: USB Cable
+            Output: Laptop Sleeve
+
+            Input: Winter Gloves
+            Output: Hand Warmers
+
+            Now give the output for: {product}
+            """
+
         
         response = llm_pipeline.invoke(prompt)
 

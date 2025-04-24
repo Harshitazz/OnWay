@@ -10,6 +10,7 @@ import { faSquarePlus } from '@fortawesome/free-solid-svg-icons';
 
 import { addToCart, fetchProductDetails } from '@/app/_utils/Api';
 import { toast } from 'sonner';
+import CustomLoading from '../loading';
 
 function Intro({ Id, closeModal }) {
     const { user } = useUser();
@@ -27,7 +28,6 @@ function Intro({ Id, closeModal }) {
 
 
     }, [Id]);
-
 
 
     const handleAddToCart = async (item) => {
@@ -66,11 +66,9 @@ function Intro({ Id, closeModal }) {
         arrows: true,
     };
 
-    if (loading || !product || Object.keys(product).length === 0) {
+    if (loading ) {
         return (
-            <div className="flex items-center justify-center h-[500px]">
-                <div className="h-[90%]  bg-gray-300/50 rounded-xl animate-pulse"></div>
-            </div>
+            <CustomLoading/>
         );
     }
 

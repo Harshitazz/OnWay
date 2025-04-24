@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import Intro from "./Intro";
 
 const truncateText = (text, maxLength = 30) =>
-  text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+  text?.length > maxLength ? text?.substring(0, maxLength) + "..." : text;
 
 const FrequentlyBoughtTogether = ({ recommendations, loading }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -78,12 +78,12 @@ const FrequentlyBoughtTogether = ({ recommendations, loading }) => {
                   <div className="h-[200px] mb-2 w-full overflow-hidden rounded-lg bg-white">
                     <img
                       className="h-full w-full object-contain"
-                      src={item.recommended_product.image[0]}
-                      alt={item.recommended_product.product_name}
+                      src={item.recommended_product?.image[0]}
+                      alt={item.recommended_product?.product_name}
                     />
                   </div>
-                  <p className="text-xs font-medium">{truncateText(item.recommended_product.product_name)}</p>
-                  <p className="text-xs text-gray-600 font-semibold mb-1">₹{item.recommended_product.discounted_price}</p>
+                  <p className="text-xs font-medium">{truncateText(item.recommended_product?.product_name)}</p>
+                  <p className="text-xs text-gray-600 font-semibold mb-1">₹{item.recommended_product?.discounted_price}</p>
                 </div>
               </div>
             ))}

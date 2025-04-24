@@ -16,7 +16,7 @@ export default function CustomLoading() {
   const dotsCount = 12;
   
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-90 z-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-70 z-50">
       <div className="relative h-32 w-32">
         {/* Cart Icon in the center */}
         <div className="absolute inset-0 flex items-center justify-center">
