@@ -1,4 +1,4 @@
-chroma_store/chroma.sqlite3
+chroma_store/
 # Ignore Node.js dependencies
 node_modules/
 .next/
