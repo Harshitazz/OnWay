@@ -16,27 +16,31 @@ function CategoryList({ setProducts, setSelectedCategory, selectedCategory }) {
 
   return (
     <div className='relative'>
-      <div ref={listRef} className='p-4 flex gap-7 my-6 no-scrollbar overflow-auto'>
+<div
+  ref={listRef}
+  className='p-4 flex gap-7 my-6 overflow-x-auto no-scrollbar cursor-grab active:cursor-grabbing'
+>
       {categories.map((category, i) => (
       <button
-        key={i}
-        onClick={() => setSelectedCategory(category.name)}
-        className={`relative p-2 shadow-lg bg-slate-50 flex flex-col items-center border-2 border-gray-300  min-w-48 min-h-60 
-          hover:border-gray-600 hover:bg-green-50 cursor-pointer group overflow-hidden
-          ${selectedCategory === category.name && "border-green-600 bg-green-100"}`}
-      >
-        {/* Background Image */}
-        <img
-          src={category.image}
-          alt={category.name}
-          className="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:opacity-50 transition-opacity duration-300"
-        />
-
-        {/* Category Name (Above Image) */}
-        <h2 className="relative mt-auto mb-4 text-xl font-semibold text-gray-900 group-hover:text-white group-hover:scale-110 transition-all duration-300">
+      key={i}
+      onClick={() => setSelectedCategory(category.name)}
+      className={ `group relative p-2 shadow-lg bg-slate-50 flex flex-col items-center border-2 border-gray-300 min-w-48 min-h-60
+        hover:border-gray-600 hover:bg-green-50 cursor-pointer group overflow-hidden
+        ${selectedCategory === category.name && "border-green-600 bg-green-100"}`}
+    >
+      <img
+        src={category.image}
+        alt={category.name}
+        className="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:opacity-70 transition-opacity duration-300"
+      />
+    
+      <div className="relative z-10 mt-auto mb-4 transition-transform duration-300 transform group-hover:scale-110">
+        <h2 className="text-xl font-semibold text-gray-900 group-hover:text-white transition-colors duration-300">
           {category.name}
         </h2>
-      </button>
+      </div>
+    </button>
+    
     ))}
       </div>
     </div>

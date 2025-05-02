@@ -58,7 +58,7 @@ const FrequentlyBoughtTogether = ({ recommendations, loading }) => {
             {recommendations.slice(0, 2).map((item, index) => (
               <div key={index} className="flex items-center bg-gray-100 rounded-lg p-2 shadow-md">
                 <div className="flex-1 text-center">
-                  <div className="overflow-hidden bg-white rounded-lg group-hover:scale-105 transition-all duration-200 ease-in-out">
+                  <div className="overflow-hidden bg-white rounded-lg hover:scale-105 transition-all duration-200 ease-in-out">
                     <img
                       className="aspect-square w-full object-contain h-[200px]"
                       src={item.cart_product?.image?.find(Boolean) || '/default-image.jpg'}
@@ -75,7 +75,7 @@ const FrequentlyBoughtTogether = ({ recommendations, loading }) => {
                   className="flex-1 text-center cursor-pointer"
                   onClick={() => openModal(item.recommended_product.uniq_id)}
                 >
-                  <div className="overflow-hidden bg-white rounded-lg group-hover:scale-105 transition-all duration-200 ease-in-out">
+                  <div className="overflow-hidden bg-white rounded-lg hover:scale-105 transition-all duration-200 ease-in-out">
                     <img
                       className="aspect-square w-full object-contain h-[200px]"
                       src={item.recommended_product?.image?.find(Boolean) || '/default-image.jpg'}

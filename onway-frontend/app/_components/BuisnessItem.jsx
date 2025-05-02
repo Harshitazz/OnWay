@@ -47,11 +47,11 @@ function BusinessItem({ product }) {
   return (
     <>
       <div className="w-full max-w-sm h-full border p-4 shadow-md flex flex-col">
-        <div className="overflow-hidden rounded-lg group-hover:scale-105 transition-all duration-200 ease-in-out">
+      <div className="overflow-hidden rounded-lg hover:scale-105 transition-transform duration-300 ease-in-out">
           <img
             className="aspect-square w-full object-contain h-[200px]"
             src={product?.image?.find(Boolean) || '/default-image.jpg'}
-          // alt={product?.product_name || 'Product image'}
+            alt={product?.product_name || 'Product image'}
           />
         </div>
 
