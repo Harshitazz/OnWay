@@ -55,7 +55,7 @@ def get_random_products():
         product = {
             "uniq_id": pid,
             "product_name": metadata.get("product_name", "Unknown"),
-            "clean_category": metadata.get("clean_category", "Unknown"),
+            "category": metadata.get("clean_category", "Unknown"),
             "description": doc
         }
         
@@ -203,7 +203,7 @@ def search():
             product = {
                 "uniq_id": product_id,
                 "product_name": metadata.get("product_name", "Unknown"),
-                "clean_category": metadata.get("clean_category", "Unknown"),
+                "category": metadata.get("clean_category", "Unknown"),
                 "description": description
             }
             

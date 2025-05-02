@@ -58,11 +58,11 @@ const FrequentlyBoughtTogether = ({ recommendations, loading }) => {
             {recommendations.slice(0, 2).map((item, index) => (
               <div key={index} className="flex items-center bg-gray-100 rounded-lg p-2 shadow-md">
                 <div className="flex-1 text-center">
-                  <div className="h-[200px] mb-2 bg-white w-full overflow-hidden rounded-lg">
+                  <div className="overflow-hidden bg-white rounded-lg group-hover:scale-105 transition-all duration-200 ease-in-out">
                     <img
-                      className="h-full w-full object-contain"
-                      src={item.cart_product.image[0]}
-                      alt={item.cart_product.product_name}
+                      className="aspect-square w-full object-contain h-[200px]"
+                      src={item.cart_product?.image?.find(Boolean) || '/default-image.jpg'}
+                    // alt={product?.product_name || 'Product image'}
                     />
                   </div>
                   <p className="text-xs font-medium">{truncateText(item.cart_product.product_name)}</p>
@@ -71,15 +71,15 @@ const FrequentlyBoughtTogether = ({ recommendations, loading }) => {
 
                 <div className="text-xl font-bold text-gray-500 mx-2">+</div>
 
-                <div 
-                  className="flex-1 text-center cursor-pointer" 
+                <div
+                  className="flex-1 text-center cursor-pointer"
                   onClick={() => openModal(item.recommended_product.uniq_id)}
                 >
-                  <div className="h-[200px] mb-2 w-full overflow-hidden rounded-lg bg-white">
+                  <div className="overflow-hidden bg-white rounded-lg group-hover:scale-105 transition-all duration-200 ease-in-out">
                     <img
-                      className="h-full w-full object-contain"
-                      src={item.recommended_product?.image[0]}
-                      alt={item.recommended_product?.product_name}
+                      className="aspect-square w-full object-contain h-[200px]"
+                      src={item.recommended_product?.image?.find(Boolean) || '/default-image.jpg'}
+                    // alt={product?.product_name || 'Product image'}
                     />
                   </div>
                   <p className="text-xs font-medium">{truncateText(item.recommended_product?.product_name)}</p>
